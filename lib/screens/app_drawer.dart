@@ -4,6 +4,7 @@ import 'package:my_shop/screens/orders_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/cart.dart';
+import '../providers/products.dart';
 import '../widgets/badge.dart';
 import '../widgets/products_grid.dart';
 import 'user_products_screen.dart';
@@ -35,6 +36,12 @@ class _AppDrawerState extends State<AppDrawer> {
       'page': const UserProductsScreen(),
     }
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<Products>(context, listen: false).fetchProducts();
+  }
 
   changeFavourites(FilterOptions val) {
     setState(() {

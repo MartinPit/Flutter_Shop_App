@@ -57,6 +57,10 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
+  Future<void> fetchProducts() async {
+    final response = await http.get(url);
+  }
+
   Future<void> addProduct(Product product) async {
     try {
       final response = await http.post(
