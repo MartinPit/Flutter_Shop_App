@@ -99,9 +99,10 @@ class Products with ChangeNotifier {
     _items.removeAt(prodIndex);
     notifyListeners();
 
-    final response = await http.delete(Uri.https(
+    final Uri url = Uri.https(
         'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products/$id.json'));
+        '/products/$id.json');
+    final response = await http.delete(url);
 
     if (response.statusCode > 400) {
       _items.insert(prodIndex, product);
