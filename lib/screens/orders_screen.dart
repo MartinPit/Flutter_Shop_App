@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_shop/screens/app_drawer.dart';
 import 'package:my_shop/widgets/order_list_item.dart';
 import 'package:provider/provider.dart';
 
@@ -12,10 +11,22 @@ class OrdersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Orders orders = Provider.of<Orders>(context);
-    return ListView.builder(
-        itemBuilder: (ctx, i) => OrderListItem(order: orders.orders[i]),
-        itemCount: orders.orders.length,
-      );
+    return FutureBuilder(
+      future: Provider.of<Orders>(context, listen: false).fetchOrders(),
+      builder: (ctx, data) {
+        if (data.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          return Consumer<Orders>(
+            builder: (context, orders, _) => ListView.builder(
+              itemBuilder: (ctx, i) => OrderListItem(order: orders.orders[i]),
+              itemCount: orders.orders.length,
+            ),
+          );
+        }
+      },
+    );
   }
 }
