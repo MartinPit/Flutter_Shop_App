@@ -84,10 +84,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       });
 
       if (_product.id != '') {
-        products.updateProduct(_product.id, _product);
-        setState(() {
-          _isLoading = false;
-        });
+        await products.updateProduct(_product.id, _product);
       } else {
         try {
           await products.addProduct(_product);
@@ -107,12 +104,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ],
             ),
           );
-        } finally {
-          setState(() {
-            _isLoading = false;
-          });
-          Navigator.of(context).pop();
         }
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).pop();
       }
     }
 
@@ -234,7 +230,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             controller: _imageUrlController,
                             onEditingComplete: () => setState(() {}),
                             focusNode: _imageUrlFocus,
-                            onFieldSubmitted: (_) => saveForm(),
+                            onFieldSubmitted: (_) {
+                              saveForm();
+                              Navigator.of(context).pop();
+                            },
                             onSaved: (value) => _product = Product(
                                 title: _product.title,
                                 price: _product.price,
@@ -269,7 +268,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => saveForm(),
+        onPressed: () {
+          saveForm();
+          Navigator.of(context).pop();
+        },
         child: const Icon(Icons.save),
       ),
     );

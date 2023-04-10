@@ -20,6 +20,7 @@ class AppDrawer extends StatefulWidget {
 }
 
 class _AppDrawerState extends State<AppDrawer> {
+  bool _isLoading = false;
   bool _showOnlyFavourites = false;
   int _selectedIndex = 0;
   late final List<Map<String, Widget>> _pages = [
@@ -39,8 +40,11 @@ class _AppDrawerState extends State<AppDrawer> {
 
   @override
   void initState() {
+    setState(() {
+      _isLoading = true;
+    });
     super.initState();
-    Provider.of<Products>(context, listen: false).fetchProducts();
+    Provider.of<Products>(context, listen: false).fetchProducts().then((_) => setState(() => _isLoading = false));
   }
 
   changeFavourites(FilterOptions val) {
@@ -94,7 +98,7 @@ class _AppDrawerState extends State<AppDrawer> {
         title: _pages[_selectedIndex]['title'],
         actions: getActionsForScreen(_selectedIndex),
       ),
-      body: _pages[_selectedIndex]['page'],
+      body: _isLoading ?  const Center(child: CircularProgressIndicator(),) :_pages[_selectedIndex]['page'],
       drawer: NavigationDrawer(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) => setState(() {
