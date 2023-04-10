@@ -9,14 +9,14 @@ class UserProductItem extends StatelessWidget {
   final String imageUrl;
   final String id;
 
-  const UserProductItem(
-      {super.key,
-      required this.title,
-      required this.imageUrl,
-      required this.id});
+  const UserProductItem({super.key,
+    required this.title,
+    required this.imageUrl,
+    required this.id});
 
   @override
   Widget build(BuildContext context) {
+    final messenger = ScaffoldMessenger.of(context);
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
@@ -27,30 +27,29 @@ class UserProductItem extends StatelessWidget {
         child: Row(
           children: [
             IconButton(
-              onPressed: () => Navigator.of(context)
-                  .pushNamed(EditProductScreen.routeName, arguments: id),
+              onPressed: () =>
+                  Navigator.of(context)
+                      .pushNamed(EditProductScreen.routeName, arguments: id),
               icon: const Icon(Icons.edit),
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .primary,
             ),
             IconButton(
-              onPressed: () => showDialog(
-                context: context,
-                builder: (context) =>
-                    AlertDialog(
-                      title: const Text('Are you sure?'),
-                      content: const Text('Do you want to remove the item from the cart?'),
-                      actions: [
-                        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('No')),
-                        TextButton(onPressed: () {
-                          Provider.of<Products>(context, listen: false).deleteProduct(id);
-                          Navigator.of(context).pop();
-                        }, child: const Text('Yes')),
-                      ],
-                    ),
-
-              ),
+              onPressed: () async {
+                try {
+                  await Provider.of<Products>(context, listen: false)
+                      .deleteProduct(id);
+                } catch (error) {
+                  messenger.showSnackBar(const SnackBar(content: Text('Deleting failed'), behavior: SnackBarBehavior.floating,));
+                }
+              },
               icon: const Icon(Icons.delete),
-              color: Theme.of(context).colorScheme.error,
+              color: Theme
+                  .of(context)
+                  .colorScheme
+                  .error,
             )
           ],
         ),
