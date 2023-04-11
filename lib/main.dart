@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:my_shop/providers/cart.dart';
 import 'package:my_shop/providers/orders.dart';
 import 'package:my_shop/providers/products.dart';
+import 'package:my_shop/screens/auth_screen.dart';
 import 'package:my_shop/screens/cart_screen.dart';
 import 'package:my_shop/screens/edit_product_screen.dart';
 import 'package:my_shop/screens/orders_screen.dart';
 import 'package:my_shop/screens/product_detail_screen.dart';
-import 'package:my_shop/screens/app_drawer.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(const MyApp());
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
               fontFamily: 'Lato'),
           themeMode: ThemeMode.system,
           debugShowCheckedModeBanner: false,
-          home: const AppDrawer(),
+          home: const AuthScreen(),
           routes: {
             ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
             CartScreen.routeName: (ctx) => const CartScreen(),
