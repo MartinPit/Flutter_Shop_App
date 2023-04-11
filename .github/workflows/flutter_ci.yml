@@ -14,7 +14,7 @@ jobs:
     - run: flutter upgrade
     - run: flutter pub get
     - run: flutter test
-    - run: flutter build apk --debug
+    - run: flutter build apk
     - uses: actions/upload-artifact@v1
       with:
         name: release-apk
