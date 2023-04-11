@@ -22,8 +22,8 @@ class AuthScreen extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  const Color.fromRGBO(215, 117, 255, 1).withOpacity(0.5),
-                  const Color.fromRGBO(255, 188, 117, 1).withOpacity(0.9),
+                  Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                  Theme.of(context).colorScheme.secondary.withOpacity(0.9),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -49,7 +49,7 @@ class AuthScreen extends StatelessWidget {
                       // ..translate(-10.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: Colors.deepOrange.shade900,
+                        color: Theme.of(context).colorScheme.primaryContainer,
                         boxShadow: const [
                           BoxShadow(
                             blurRadius: 8,
@@ -220,6 +220,7 @@ class _AuthCardState extends State<AuthCard> {
                     const EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   ),
                   child: Text(
                       '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
