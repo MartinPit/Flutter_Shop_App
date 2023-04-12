@@ -10,6 +10,18 @@ class Auth with ChangeNotifier {
   DateTime? _expiryDate;
   String? _userID;
 
+  bool get isAuth {
+    return token != null;
+  }
+
+  String? get token {
+    if (_expiryDate == null || !_expiryDate!.isAfter(DateTime.now())) {
+      return null;
+    }
+
+    return _token;
+  }
+
   Future<void> _authenticate(String email, String pass, String endpoint) async {
     final url = Uri.https('identitytoolkit.googleapis.com',
        endpoint, {'key': Env.apiKey});
@@ -19,10 +31,15 @@ class Auth with ChangeNotifier {
             {'email': email, 'password': pass, 'returnSecureToken': true}));
 
     final data = json.decode(response.body);
-    print(data);
+
     if (data['error'] != null) {
       throw HttpException(data['error']['message']);
     }
+
+    _token = data['idToken'];
+    _userID = data['localId'];
+    _expiryDate = DateTime.now().add(Duration(seconds: int.parse(data['expiresIn'])));
+    notifyListeners();
   }
 
   Future<void> signup(String email, String pass) async {
