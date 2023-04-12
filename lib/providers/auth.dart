@@ -11,9 +11,10 @@ class Auth with ChangeNotifier {
 
   Future<void> signup(String email, String pass) async {
     final url = Uri.https("identitytoolkit.googleapis.com",
-        "/v1/accounts:signUp?key=${Env.apiKey}");
+        "/v1/accounts:signUp", {'key': Env.apiKey});
     final response = await post(url,
         body: json.encode(
             {'email': email, 'password': pass, 'returnSecureToken': true}));
+    print(json.decode(response.body));
   }
 }
