@@ -232,7 +232,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             focusNode: _imageUrlFocus,
                             onFieldSubmitted: (_) {
                               saveForm();
-                              Navigator.of(context).pop();
                             },
                             onSaved: (value) => _product = Product(
                                 title: _product.title,
@@ -270,7 +269,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           saveForm();
-          Navigator.of(context).pop();
         },
         child: const Icon(Icons.save),
       ),
