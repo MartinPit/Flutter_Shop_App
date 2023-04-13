@@ -27,7 +27,7 @@ class Product with ChangeNotifier {
         '/products/$id.json', {'auth': token});
     isFavourite = !isFavourite;
     notifyListeners();
-    final response = await http.patch(url, body: json.encode({'isFavourite': !isFavourite}));
+    final response = await http.patch(url, body: json.encode({'isFavourite': isFavourite}));
 
     if (response.statusCode >= 400) {
       isFavourite = !isFavourite;
