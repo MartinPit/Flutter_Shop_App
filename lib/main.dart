@@ -21,10 +21,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (ctx) => Products()),
+        ChangeNotifierProvider(create: (ctx) => Auth()),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          create: (ctx) => Products([], token: ''),
+          update: (ctx, auth, previous) => Products(
+              previous == null ? [] : previous.items,
+              token: auth.token!),
+        ),
         ChangeNotifierProvider(create: (ctx) => Cart()),
         ChangeNotifierProvider(create: (ctx) => Orders()),
-        ChangeNotifierProvider(create: (ctx) => Auth()),
       ],
       child: Consumer<Auth>(
         builder: (context, auth, child) => DynamicColorBuilder(

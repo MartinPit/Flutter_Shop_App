@@ -8,10 +8,10 @@ import 'package:my_shop/models/http_exception.dart';
 import 'product.dart';
 
 class Products with ChangeNotifier {
-  final url = Uri.https(
-      'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
-      '/products.json');
-  final List<Product> _items = [];
+  final List<Product> _items;
+  final String token;
+
+  Products(this._items, {required this.token});
 
   List<Product> get items {
     return [..._items];
@@ -27,7 +27,9 @@ class Products with ChangeNotifier {
 
   Future<void> fetchProducts() async {
     _items.clear();
-    final response = await http.get(url);
+    final response = await http.get(Uri.https(
+        'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
+        '/products.json', {'auth': token}));
     final Map<String, dynamic> decodedData = json.decode(response.body);
     decodedData.forEach((id, data) => _items.add(Product(
         id: id,
@@ -43,7 +45,9 @@ class Products with ChangeNotifier {
   Future<void> addProduct(Product product) async {
     try {
       final response = await http.post(
-        url,
+        Uri.https(
+            'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
+            '/products.json', {'auth': token}),
         body: json.encode(
           {
             'title': product.title,
@@ -76,7 +80,7 @@ class Products with ChangeNotifier {
     await http.patch(
         Uri.https(
             'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
-            '/products/$id.json'),
+            '/products/$id.json', {'auth': token}),
         body: json.encode({
           'title': newProduct.title,
           'description': newProduct.description,
@@ -101,7 +105,7 @@ class Products with ChangeNotifier {
 
     final Uri url = Uri.https(
         'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products/$id.json');
+        '/products/$id.json', {'auth': token});
     final response = await http.delete(url);
 
     if (response.statusCode > 400) {
