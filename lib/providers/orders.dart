@@ -20,10 +20,10 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
-  final url = Uri.https(
-      'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
-      '/orders.json');
-  final List<OrderItem> _orders = [];
+  final List<OrderItem> _orders;
+  final String token;
+
+  Orders(this._orders, {required this.token});
 
   List<OrderItem> get orders {
     return [..._orders];
@@ -31,7 +31,11 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(List<CartItem> products, double total) async {
     final timestamp = DateTime.now();
-    final response = await http.post(url,
+    final response = await http.post(
+        Uri.https(
+            'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
+            '/orders.json',
+            {'auth': token}),
         body: json.encode({
           'amount': total,
           'datetime': timestamp.toIso8601String(),
@@ -61,23 +65,28 @@ class Orders with ChangeNotifier {
 
   Future<void> fetchOrders() async {
     _orders.clear();
-    final response = await http.get(url);
+    final response = await http.get(Uri.https(
+        'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
+        '/orders.json',
+        {'auth': token}));
     final data = json.decode(response.body);
     if (data == null) {
       return;
     }
     data.forEach((id, order) {
-      _orders.insert(0, OrderItem(
-          id: id,
-          amount: order['amount'],
-          products: (order['products'] as List<dynamic>)
-              .map((e) => CartItem(
-                  id: e['id'],
-                  title: e['title'],
-                  quantity: e['quantity'],
-                  price: e['price']))
-              .toList(),
-          datetime: DateTime.parse(order['datetime'])));
+      _orders.insert(
+          0,
+          OrderItem(
+              id: id,
+              amount: order['amount'],
+              products: (order['products'] as List<dynamic>)
+                  .map((e) => CartItem(
+                      id: e['id'],
+                      title: e['title'],
+                      quantity: e['quantity'],
+                      price: e['price']))
+                  .toList(),
+              datetime: DateTime.parse(order['datetime'])));
     });
     notifyListeners();
   }

@@ -29,7 +29,12 @@ class MyApp extends StatelessWidget {
               token: auth.token!),
         ),
         ChangeNotifierProvider(create: (ctx) => Cart()),
-        ChangeNotifierProvider(create: (ctx) => Orders()),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          create: (ctx) => Orders([], token: ''),
+          update: (ctx, auth, previous) => Orders(
+              previous == null ? [] : previous.orders,
+              token: auth.token!),
+        ),
       ],
       child: Consumer<Auth>(
         builder: (context, auth, child) => DynamicColorBuilder(
