@@ -9,28 +9,33 @@ class UserProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Products productsData = Provider.of<Products>(context);
-
     Future<void> refreshData(BuildContext context) async {
-      await Provider.of<Products>(context, listen: false).fetchProducts();
+      await Provider.of<Products>(context, listen: false).fetchProducts(true);
     }
 
-    return RefreshIndicator(
-      onRefresh: () => refreshData(context),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: ListView.builder(
-          itemBuilder: (ctx, i) => Column(
-            children: [
-              UserProductItem(
-                title: productsData.items[i].title,
-                imageUrl: productsData.items[i].imageUrl,
-                id: productsData.items[i].id,
-              ),
-              const Divider(),
-            ],
+    return FutureBuilder(
+      future: refreshData(context),
+      builder: (context, snapshot) =>
+      snapshot.connectionState == ConnectionState.waiting ? const Center(child: CircularProgressIndicator()) : RefreshIndicator(
+        onRefresh: () => refreshData(context),
+        child: Consumer<Products>(
+          builder: (context, products, _) => Padding(
+            padding: const EdgeInsets.all(8),
+            child: ListView.builder(
+              itemBuilder: (ctx, i) =>
+                  Column(
+                    children: [
+                      UserProductItem(
+                        title: products.items[i].title,
+                        imageUrl: products.items[i].imageUrl,
+                        id: products.items[i].id,
+                      ),
+                      const Divider(),
+                    ],
+                  ),
+              itemCount: products.items.length,
+            ),
           ),
-          itemCount: productsData.items.length,
         ),
       ),
     );

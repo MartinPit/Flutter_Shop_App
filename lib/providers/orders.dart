@@ -22,8 +22,9 @@ class OrderItem {
 class Orders with ChangeNotifier {
   final List<OrderItem> _orders;
   final String token;
+  final String _userId;
 
-  Orders(this._orders, {required this.token});
+  Orders(this._orders, this._userId, {required this.token});
 
   List<OrderItem> get orders {
     return [..._orders];
@@ -34,7 +35,7 @@ class Orders with ChangeNotifier {
     final response = await http.post(
         Uri.https(
             'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
-            '/orders.json',
+            '/orders/$_userId.json',
             {'auth': token}),
         body: json.encode({
           'amount': total,
@@ -67,7 +68,7 @@ class Orders with ChangeNotifier {
     _orders.clear();
     final response = await http.get(Uri.https(
         'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
-        '/orders.json',
+        '/orders/$_userId.json',
         {'auth': token}));
     final data = json.decode(response.body);
     if (data == null) {

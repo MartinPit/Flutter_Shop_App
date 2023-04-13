@@ -26,16 +26,31 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchProducts([bool filterByUser = false]) async {
     _items.clear();
+    Map<String, String> parameters = {};
+    if (filterByUser) {
+      parameters = {
+        'auth': token,
+        'orderBy': json.encode("userId"),
+        'equalTo': '"$userId"'
+      };
+    } else {
+      parameters = {
+        'auth': token,
+      };
+    }
+
+
     final response = await http.get(Uri.https(
         'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products.json', {'auth': token}));
+        '/products.json', parameters));
     final decodedData = json.decode(response.body) as Map<String, dynamic>;
 
     final favourites = await http.get(Uri.https(
         'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
-        '/userFavourites/$userId.json', {'auth': token}));
+        '/userFavourites/$userId.json',
+        {'auth': token}));
 
     final decodedFavourites = json.decode(favourites.body);
 
@@ -45,7 +60,9 @@ class Products with ChangeNotifier {
         description: data['description'],
         price: data['price'],
         imageUrl: data['imageUrl'],
-        isFavourite: decodedFavourites == null ? false : decodedFavourites[id] ?? false)));
+        isFavourite: decodedFavourites == null
+            ? false
+            : decodedFavourites[id] ?? false)));
 
     notifyListeners();
   }
@@ -55,13 +72,15 @@ class Products with ChangeNotifier {
       final response = await http.post(
         Uri.https(
             'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
-            '/products.json', {'auth': token}),
+            '/products.json',
+            {'auth': token}),
         body: json.encode(
           {
             'title': product.title,
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
+            'userId': userId,
           },
         ),
       );
@@ -87,7 +106,8 @@ class Products with ChangeNotifier {
     await http.patch(
         Uri.https(
             'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
-            '/products/$id.json', {'auth': token}),
+            '/products/$id.json',
+            {'auth': token}),
         body: json.encode({
           'title': newProduct.title,
           'description': newProduct.description,
@@ -112,7 +132,8 @@ class Products with ChangeNotifier {
 
     final Uri url = Uri.https(
         'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
-        '/products/$id.json', {'auth': token});
+        '/products/$id.json',
+        {'auth': token});
     final response = await http.delete(url);
 
     if (response.statusCode > 400) {
