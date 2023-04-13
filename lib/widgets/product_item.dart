@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_shop/screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/auth.dart';
 import '../providers/cart.dart';
 import '../providers/product.dart';
 
@@ -17,14 +18,14 @@ class ProductItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
         footer: GridTileBar(
-          leading: Consumer<Product>(
-            builder: (ctx, product, child) => IconButton(
+          leading: Consumer2<Product, Auth>(
+            builder: (ctx, product, auth, _) => IconButton(
               icon: Icon(product.isFavourite
                   ? Icons.favorite
                   : Icons.favorite_border_outlined),
               onPressed: () async {
                 try {
-                  await product.toggleFavorite();
+                  await product.toggleFavorite(auth.token!);
                 } catch (error) {
                   messenger.showSnackBar(SnackBar(content: Text(error.toString()), behavior: SnackBarBehavior.floating,));
                 }
