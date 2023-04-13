@@ -10,8 +10,9 @@ import 'product.dart';
 class Products with ChangeNotifier {
   final List<Product> _items;
   final String token;
+  final String userId;
 
-  Products(this._items, {required this.token});
+  Products(this._items, this.userId, {required this.token});
 
   List<Product> get items {
     return [..._items];
@@ -30,14 +31,21 @@ class Products with ChangeNotifier {
     final response = await http.get(Uri.https(
         'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
         '/products.json', {'auth': token}));
-    final Map<String, dynamic> decodedData = json.decode(response.body);
+    final decodedData = json.decode(response.body) as Map<String, dynamic>;
+
+    final favourites = await http.get(Uri.https(
+        'flutter-shop-app-1f679-default-rtdb.europe-west1.firebasedatabase.app',
+        '/userFavourites/$userId.json', {'auth': token}));
+
+    final decodedFavourites = json.decode(favourites.body);
+
     decodedData.forEach((id, data) => _items.add(Product(
         id: id,
         title: data['title'],
         description: data['description'],
         price: data['price'],
         imageUrl: data['imageUrl'],
-        isFavourite: data['isFavourite'])));
+        isFavourite: decodedFavourites == null ? false : decodedFavourites[id] ?? false)));
 
     notifyListeners();
   }
@@ -54,7 +62,6 @@ class Products with ChangeNotifier {
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
-            'isFavourite': product.isFavourite,
           },
         ),
       );

@@ -8,10 +8,14 @@ import 'package:my_shop/models/http_exception.dart';
 class Auth with ChangeNotifier {
   String? _token;
   DateTime? _expiryDate;
-  String? _userID;
+  String? _userId;
 
   bool get isAuth {
     return token != null;
+  }
+
+  String? get userId {
+    return _userId;
   }
 
   String? get token {
@@ -37,7 +41,7 @@ class Auth with ChangeNotifier {
     }
 
     _token = data['idToken'];
-    _userID = data['localId'];
+    _userId = data['localId'];
     _expiryDate = DateTime.now().add(Duration(seconds: int.parse(data['expiresIn'])));
     notifyListeners();
   }
