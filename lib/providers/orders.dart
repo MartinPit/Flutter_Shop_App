@@ -20,14 +20,20 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
-  final List<OrderItem> _orders;
-  final String token;
-  final String _userId;
+  List<OrderItem> _orders;
+  String? token;
+  String? _userId;
 
   Orders(this._orders, this._userId, {required this.token});
 
   List<OrderItem> get orders {
     return [..._orders];
+  }
+
+  void update(List<OrderItem> orders, String? token, String? userId) {
+    _orders = orders;
+    this.token = token;
+    _userId = userId;
   }
 
   Future<void> addOrder(List<CartItem> products, double total) async {

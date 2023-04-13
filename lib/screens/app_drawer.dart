@@ -3,6 +3,7 @@ import 'package:my_shop/screens/edit_product_screen.dart';
 import 'package:my_shop/screens/orders_screen.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/auth.dart';
 import '../providers/cart.dart';
 import '../providers/products.dart';
 import '../widgets/badge.dart';
@@ -33,9 +34,11 @@ class _AppDrawerState extends State<AppDrawer> {
       'page': const OrdersScreen(),
     },
     {
-      'title': const Text('Personal Products',),
+      'title': const Text(
+        'Personal Products',
+      ),
       'page': const UserProductsScreen(),
-    }
+    },
   ];
 
   @override
@@ -44,12 +47,16 @@ class _AppDrawerState extends State<AppDrawer> {
       _isLoading = true;
     });
     super.initState();
-    Provider.of<Products>(context, listen: false).fetchProducts().then((_) => setState(() => _isLoading = false));
+    Provider.of<Products>(context, listen: false)
+        .fetchProducts()
+        .then((_) => setState(() => _isLoading = false));
   }
 
   changeFavourites(FilterOptions val) {
     setState(() {
-      val == FilterOptions.Favourites ? _showOnlyFavourites = true : _showOnlyFavourites = false;
+      val == FilterOptions.Favourites
+          ? _showOnlyFavourites = true
+          : _showOnlyFavourites = false;
     });
 
     _pages[0]['page'] = ProductsGrid(showFavourites: _showOnlyFavourites);
@@ -60,35 +67,44 @@ class _AppDrawerState extends State<AppDrawer> {
     final List<Widget> overViewActions = [
       PopupMenuButton(
         onSelected: (val) => changeFavourites(val),
-        icon: const Icon(Icons.more_vert,),
-        itemBuilder: (_) => [
+        icon: const Icon(
+          Icons.more_vert,
+        ),
+        itemBuilder: (_) =>
+        [
           const PopupMenuItem(
-              value: FilterOptions.Favourites,
-              child: Text('Only favourites')),
+              value: FilterOptions.Favourites, child: Text('Only favourites')),
           const PopupMenuItem(
               value: FilterOptions.All, child: Text('Show All')),
         ],
       ),
       Consumer<Cart>(
-        builder: (ctx, cart, btn) => BadgeOverlay(
-          value: cart.itemCount.toString(),
-          child: btn!,
-        ),
+        builder: (ctx, cart, btn) =>
+            BadgeOverlay(
+              value: cart.itemCount.toString(),
+              child: btn!,
+            ),
         child: IconButton(
           icon: const Icon(Icons.shopping_cart),
           onPressed: () =>
               Navigator.of(context).pushNamed(CartScreen.routeName),
         ),
-      )
+      ),
+      Consumer<Auth>(builder: (context, auth, _) => IconButton(onPressed: () => auth.logout(), icon: const Icon(Icons.exit_to_app)),)
     ];
     final List<Widget> userProductsActions = [
-      IconButton(onPressed: () => Navigator.pushNamed(context, EditProductScreen.routeName), icon: const Icon(Icons.add)),
+      IconButton(
+          onPressed: () =>
+              Navigator.pushNamed(context, EditProductScreen.routeName),
+          icon: const Icon(Icons.add)),
     ];
 
     List<Widget> getActionsForScreen(int index) {
       switch (index) {
-        case 0: return overViewActions;
-        case 2: return userProductsActions;
+        case 0:
+          return overViewActions;
+        case 2:
+          return userProductsActions;
       }
       return [];
     }
@@ -98,31 +114,35 @@ class _AppDrawerState extends State<AppDrawer> {
         title: _pages[_selectedIndex]['title'],
         actions: getActionsForScreen(_selectedIndex),
       ),
-      body: _isLoading ?  const Center(child: CircularProgressIndicator(),) :_pages[_selectedIndex]['page'],
+      body: _isLoading
+          ? const Center(
+        child: CircularProgressIndicator(),
+      )
+          : _pages[_selectedIndex]['page'],
       drawer: NavigationDrawer(
         selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) => setState(() {
-          _selectedIndex = index;
-        }),
+        onDestinationSelected: (index) =>
+            setState(() {
+              _selectedIndex = index;
+            }),
         children: const [
-          SizedBox(height: 20),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.shopping_bag_outlined),
-            label: Text('Products'),
-            selectedIcon: Icon(Icons.shopping_bag),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.text_snippet_outlined),
-            label: Text('Orders'),
-            selectedIcon: Icon(Icons.text_snippet),
-          ),
-          NavigationDrawerDestination(
-            icon: Icon(Icons.add_circle_outline),
-            label: Text('User items'),
-            selectedIcon: Icon(Icons.add_circle),
-          ),
-        ],
-      ),
-    );
+        SizedBox(height: 20),
+        NavigationDrawerDestination(
+          icon: Icon(Icons.shopping_bag_outlined),
+          label: Text('Products'),
+          selectedIcon: Icon(Icons.shopping_bag),
+        ),
+        NavigationDrawerDestination(
+          icon: Icon(Icons.text_snippet_outlined),
+          label: Text('Orders'),
+          selectedIcon: Icon(Icons.text_snippet),
+        ),
+        NavigationDrawerDestination(
+          icon: Icon(Icons.add_circle_outline),
+          label: Text('User items'),
+          selectedIcon: Icon(Icons.add_circle),
+        ),
+      ],
+    ),);
   }
 }

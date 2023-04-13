@@ -8,9 +8,9 @@ import 'package:my_shop/models/http_exception.dart';
 import 'product.dart';
 
 class Products with ChangeNotifier {
-  final List<Product> _items;
-  final String token;
-  final String userId;
+  List<Product> _items;
+  String? token;
+  String? userId;
 
   Products(this._items, this.userId, {required this.token});
 
@@ -22,6 +22,12 @@ class Products with ChangeNotifier {
     return _items.where((item) => item.isFavourite).toList();
   }
 
+  void update(List<Product> items, String? token, String? userId) {
+    _items = items;
+    this.token = token;
+    this.userId = userId;
+  }
+
   Product getProduct({required id}) {
     return _items.firstWhere((element) => element.id == id);
   }
@@ -31,13 +37,13 @@ class Products with ChangeNotifier {
     Map<String, String> parameters = {};
     if (filterByUser) {
       parameters = {
-        'auth': token,
+        'auth': token ?? '',
         'orderBy': json.encode("userId"),
         'equalTo': '"$userId"'
       };
     } else {
       parameters = {
-        'auth': token,
+        'auth': token ?? '',
       };
     }
 
